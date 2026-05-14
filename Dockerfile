@@ -18,4 +18,4 @@ RUN mkdir -p /app/data && python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "mkdir -p /app/data && python manage.py migrate --noinput && exec gunicorn stripe_demo.wsgi:application --bind 0.0.0.0:${PORT:-8000}"]
+CMD ["sh", "-c", "mkdir -p /app/data && python manage.py migrate --noinput && python manage.py ensure_admin && exec gunicorn stripe_demo.wsgi:application --bind 0.0.0.0:${PORT:-8000}"]
