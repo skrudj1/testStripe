@@ -29,7 +29,6 @@ curl http://127.0.0.1:8000/item/1
 
 docker: docker compose up --build
 
-render: render.com web service + docker из корня, env из .env.example, SQLITE_PATH=/app/data/db.sqlite3. хосты для stripe — см. код (RENDER_EXTERNAL_HOSTNAME подхватывается). если free без shell: BOOTSTRAP_ADMIN_USER=asd BOOTSTRAP_ADMIN_PASSWORD=asd в environment, деплой, логин в админку, потом эти две переменные удали.
 
 папки: stripe_demo настройки, items логика, templates/items html.
 
