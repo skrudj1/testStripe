@@ -1,0 +1,10 @@
+# Blueprint для https://render.com (бесплатный Web Service + Docker)
+# После первого деплоя задайте переменные окружения в Dashboard и создайте superuser (см. README).
+services:
+  - type: web
+    name: stripe-demo
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /

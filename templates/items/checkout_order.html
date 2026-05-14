@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buy order #{{ order.id }}</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; }
+    button { padding: 0.6rem 1.2rem; font-size: 1rem; cursor: pointer; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { text-align: left; border-bottom: 1px solid #ddd; padding: 0.4rem 0; }
+    .err { color: #b00020; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Order #{{ order.id }}</h1>
+  <table>
+    <thead><tr><th>Item</th><th>Qty</th><th>Price</th></tr></thead>
+    <tbody>
+      {% for line in lines %}
+      <tr>
+        <td>{{ line.item.name }} ({{ line.item.currency|upper }})</td>
+        <td>{{ line.quantity }}</td>
+        <td>{{ line.item.price }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if order.discount %}<p>Discount: {{ order.discount.name }} (Stripe coupon)</p>{% endif %}
+  {% if order.tax %}<p>Tax: {{ order.tax.name }} (Stripe tax rate on lines)</p>{% endif %}
+  <button type="button" id="buy-button">Pay order</button>
+  <p id="error" class="err" hidden></p>
+  <script>
+    (function () {
+      var stripe = Stripe("{{ stripe_publishable_key|escapejs }}");
+      var buyButton = document.getElementById("buy-button");
+      var errEl = document.getElementById("error");
+      buyButton.addEventListener("click", function () {
+        errEl.hidden = true;
+        fetch("{{ buy_url }}", { method: "GET" })
+          .then(function (response) { return response.json(); })
+          .then(function (data) {
+            if (data.error) throw new Error(data.error);
+            return stripe.redirectToCheckout({ sessionId: data.session_id });
+          })
+          .then(function (result) {
+            if (result && result.error) throw new Error(result.error.message);
+          })
+          .catch(function (e) {
+            errEl.textContent = e.message || "Payment could not start.";
+            errEl.hidden = false;
+          });
+      });
+    })();
+  </script>
+</body>
+</html>
